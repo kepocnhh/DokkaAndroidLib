@@ -1,4 +1,3 @@
-import com.android.build.gradle.api.BaseVariant
 import java.net.URL
 
 version = "0.0.1"
@@ -14,27 +13,6 @@ plugins {
     id("org.jetbrains.dokka") version Version.dokka
 }
 
-/*
-fun BaseVariant.assembleDocumentation() {
-    val variant = this
-    task<org.jetbrains.dokka.gradle.DokkaTask>(camelCase("assemble", variant.name, "Documentation")) {
-        outputDirectory.set(buildDir.resolve("documentation/${variant.name}"))
-        moduleName.set(Repository.name)
-        moduleVersion.set(getVersion())
-        dokkaSourceSets.create(camelCase(variant.name, "main")) {
-            reportUndocumented.set(false)
-            sourceLink {
-                val path = "src/main/kotlin"
-                localDirectory.set(file(path))
-                val url = GitHubUtil.url(Repository.owner, Repository.name)
-                remoteUrl.set(URL("$url/tree/${moduleVersion.get()}/lib/$path"))
-            }
-            jdkVersion.set(Version.jvmTarget.toInt())
-        }
-    }
-}
-*/
-
 android {
     namespace = "dokka.android.lib"
     compileSdk = Version.Android.compileSdk
@@ -43,21 +21,37 @@ android {
         minSdk = Version.Android.minSdk
     }
 
-/*
     libraryVariants.all {
         val variant = this
-        val output = variant.outputs.single()
+        val output = outputs.single()
         check(output is com.android.build.gradle.internal.api.LibraryVariantOutputImpl)
-        output.outputFileName = getOutputFileName("aar")
-        assembleDocumentation()
+        output.outputFileName = listOf(
+            rootProject.name,
+            name,
+            version
+        ).joinToString(separator = "-", postfix = ".aar")
+        task<org.jetbrains.dokka.gradle.DokkaTask>("assemble${variant.name.capitalize()}Documentation") {
+            outputDirectory.set(buildDir.resolve("documentation/${variant.name}"))
+            moduleName.set(rootProject.name)
+            moduleVersion.set(version.toString())
+            dokkaSourceSets.create("${variant.name}Main") {
+                val path = "src/main/kotlin"
+                reportUndocumented.set(false)
+                sourceLink {
+                    localDirectory.set(file(path))
+                    val url = "https://github.com/kepocnhh/DokkaAndroidLib"
+                    remoteUrl.set(URL("$url/tree/${moduleVersion.get()}/lib/$path"))
+                }
+                jdkVersion.set(Version.jvmTarget.toInt())
+            }
+        }
         afterEvaluate {
-            tasks.getByName<JavaCompile>(camelCase("compile", variant.name, "JavaWithJavac")) {
+            tasks.getByName<JavaCompile>("compile${variant.name.capitalize()}JavaWithJavac") {
                 targetCompatibility = Version.jvmTarget
             }
-            tasks.getByName<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>(camelCase("compile", variant.name, "Kotlin")) {
+            tasks.getByName<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compile${variant.name.capitalize()}Kotlin") {
                 kotlinOptions.jvmTarget = Version.jvmTarget
             }
         }
     }
-*/
 }
