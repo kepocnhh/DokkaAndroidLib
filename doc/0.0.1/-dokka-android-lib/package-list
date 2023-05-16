@@ -1,0 +1,6 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:dokka.android.lib////PointingToDeclaration/-dokka-android-lib/dokka.android.lib/index.html
+$dokka.location:dokka.android.lib//showToast/android.content.Context#kotlin.String#kotlin.Int/PointingToDeclaration/-dokka-android-lib/dokka.android.lib/show-toast.html
+dokka.android.lib
+
